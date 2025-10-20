@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shawarma Palace - Authentic Middle Eastern Flavors</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
             --primary: #e67e22;
@@ -31,6 +30,7 @@
             background-color: var(--light);
             color: var(--dark);
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
         .container {
@@ -166,8 +166,10 @@
             height: 80vh;
             display: flex;
             align-items: center;
-            background: linear-gradient(135deg, rgba(230, 126, 34, 0.9), rgba(211, 84, 0, 0.8)), 
-                        url('https://images.unsplash.com/photo-1565299585323-38174c13fae8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+            background: 
+  
+  url("image 9.jpeg") center/cover no-repeat;
+
             background-size: cover;
             background-position: center;
             color: white;
@@ -407,20 +409,28 @@
             border: none;
         }
 
-        /* Cart Sidebar */
+        /* Cart Sidebar - Fixed to move with navigation */
         .cart-sidebar {
             position: fixed;
-            top: 0;
+            top: 70px; /* Same as nav height */
             right: -400px;
             width: 100%;
             max-width: 400px;
-            height: 100vh;
+            height: calc(100vh - 70px);
             background: white;
             box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-            z-index: 1100;
+            z-index: 999; /* Lower than nav but higher than content */
             transition: var(--transition);
             display: flex;
             flex-direction: column;
+        }
+
+        .cart-sidebar.scrolled-up {
+            transform: translateY(-100%);
+        }
+
+        .cart-sidebar.scrolled-down {
+            transform: translateY(0);
         }
 
         .cart-sidebar.active {
@@ -603,7 +613,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 1050;
+            z-index: 998; /* Below cart but above content */
             opacity: 0;
             visibility: hidden;
             transition: var(--transition);
@@ -708,7 +718,7 @@
             color: #95a5a6;
         }
 
-        /* Responsive Styles */
+        /* Responsive Styles - Fixed to prevent cart sidebar auto-appearance */
         @media (max-width: 992px) {
             .hero-content h1 {
                 font-size: 40px;
@@ -716,6 +726,15 @@
 
             .about {
                 grid-template-columns: 1fr;
+            }
+            
+            /* Ensure cart sidebar stays hidden on resize */
+            .cart-sidebar {
+                right: -400px !important;
+            }
+            
+            .cart-sidebar.active {
+                right: 0 !important;
             }
         }
 
@@ -760,6 +779,13 @@
 
             .cart-sidebar {
                 max-width: 100%;
+                top: 70px;
+                height: calc(100vh - 70px);
+                right: -100% !important; /* Ensure it stays hidden */
+            }
+            
+            .cart-sidebar.active {
+                right: 0 !important;
             }
         }
 
@@ -804,6 +830,35 @@
         </div>
     </nav>
 
+    <!-- Cart Sidebar - Fixed to move with navigation -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3><i class="fas fa-shopping-bag"></i> Your Cart</h3>
+            <button class="close-cart" id="closeCart">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items will be dynamically added here -->
+            <div class="empty-cart">
+                <i class="fas fa-shopping-bag"></i>
+                <p>Your cart is empty</p>
+            </div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">KSh 0</span>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn">
+                <i class="fas fa-credit-card"></i> Checkout
+            </button>
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
     <!-- Hero Section -->
     <section class="hero" id="home">
         <div class="container">
@@ -830,7 +885,7 @@
                 <div class="menu-card">
                     <div class="menu-badge">Bestseller</div>
                     <div class="menu-image">
-                        <img src="https://images.unsplash.com/photo-1635315563254-a3ad4e274ee1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Chicken Shawarma">
+                        <img src="Image 6.jpeg" alt="Chicken Shawarma">
                     </div>
                     <div class="menu-content">
                         <h3 class="menu-title">Chicken Shawarma</h3>
@@ -865,7 +920,7 @@
                 <!-- Menu Item 3 -->
                 <div class="menu-card">
                     <div class="menu-image">
-                        <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Falafel Wrap">
+                        <img src="Image 5.jpeg" alt="Falafel Wrap">
                     </div>
                     <div class="menu-content">
                         <h3 class="menu-title">Falafel Wrap</h3>
@@ -987,35 +1042,6 @@
         </div>
     </section>
 
-    <!-- Cart Sidebar -->
-    <div class="cart-sidebar" id="cartSidebar">
-        <div class="cart-header">
-            <h3><i class="fas fa-shopping-bag"></i> Your Cart</h3>
-            <button class="close-cart" id="closeCart">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="cart-items" id="cartItems">
-            <!-- Cart items will be dynamically added here -->
-            <div class="empty-cart">
-                <i class="fas fa-shopping-bag"></i>
-                <p>Your cart is empty</p>
-            </div>
-        </div>
-        <div class="cart-footer">
-            <div class="cart-total">
-                <span>Total:</span>
-                <span id="cartTotal">KSh 0</span>
-            </div>
-            <button class="checkout-btn" id="checkoutBtn">
-                <i class="fas fa-credit-card"></i> Checkout
-            </button>
-        </div>
-    </div>
-
-    <!-- Overlay -->
-    <div class="overlay" id="overlay"></div>
-
     <!-- Toast Notification -->
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
@@ -1071,6 +1097,7 @@
     <script>
         // Navigation Scroll Effect
         const navbar = document.getElementById('navbar');
+        const cartSidebar = document.getElementById('cartSidebar');
         let lastScrollY = window.scrollY;
 
         window.addEventListener('scroll', () => {
@@ -1079,15 +1106,21 @@
                     // Scrolling down
                     navbar.classList.add('scrolled-up');
                     navbar.classList.remove('scrolled-down');
+                    cartSidebar.classList.add('scrolled-up');
+                    cartSidebar.classList.remove('scrolled-down');
                 } else {
                     // Scrolling up
                     navbar.classList.remove('scrolled-up');
                     navbar.classList.add('scrolled-down');
+                    cartSidebar.classList.remove('scrolled-up');
+                    cartSidebar.classList.add('scrolled-down');
                 }
             } else {
                 // At top of page
                 navbar.classList.remove('scrolled-up');
                 navbar.classList.remove('scrolled-down');
+                cartSidebar.classList.remove('scrolled-up');
+                cartSidebar.classList.remove('scrolled-down');
             }
             
             lastScrollY = window.scrollY;
@@ -1110,7 +1143,6 @@
 
         // Cart Functionality
         const cartIcon = document.getElementById('cartIcon');
-        const cartSidebar = document.getElementById('cartSidebar');
         const closeCart = document.getElementById('closeCart');
         const overlay = document.getElementById('overlay');
         const cartItems = document.getElementById('cartItems');
@@ -1316,6 +1348,14 @@
 
         // Initialize cart UI
         updateCartUI();
+        
+        // Prevent cart sidebar from appearing on browser resize
+        window.addEventListener('resize', () => {
+            // Ensure cart sidebar stays hidden on resize unless explicitly opened
+            if (!cartSidebar.classList.contains('active')) {
+                cartSidebar.style.right = '-400px';
+            }
+        });
     </script>
 </body>
 </html>
