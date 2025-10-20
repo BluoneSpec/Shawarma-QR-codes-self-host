@@ -1136,441 +1136,266 @@
     </footer>
 
     <script>
-        // Navigation Scroll Effect
-        const navbar = document.getElementById('navbar');
-        const cartSidebar = document.getElementById('cartSidebar');
-        let lastScrollY = window.scrollY;
+document.addEventListener('DOMContentLoaded', () => {
 
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 100) {
-                if (lastScrollY < window.scrollY) {
-                    // Scrolling down
-                    navbar.classList.add('scrolled-up');
-                    navbar.classList.remove('scrolled-down');
-                    cartSidebar.classList.add('scrolled-up');
-                    cartSidebar.classList.remove('scrolled-down');
-                } else {
-                    // Scrolling up
-                    navbar.classList.remove('scrolled-up');
-                    navbar.classList.add('scrolled-down');
-                    cartSidebar.classList.remove('scrolled-up');
-                    cartSidebar.classList.add('scrolled-down');
-                }
-            } else {
-                // At top of page
-                navbar.classList.remove('scrolled-up');
+    /* ------------------------------
+       Navigation Scroll Effect
+    ------------------------------ */
+    const navbar = document.getElementById('navbar');
+    const cartSidebar = document.getElementById('cartSidebar');
+    let lastScrollY = window.scrollY;
+
+    window.addEventListener('scroll', () => {
+        if (!navbar || !cartSidebar) return;
+
+        if (window.scrollY > 100) {
+            if (lastScrollY < window.scrollY) {
+                // Scrolling down
+                navbar.classList.add('scrolled-up');
                 navbar.classList.remove('scrolled-down');
-                cartSidebar.classList.remove('scrolled-up');
+                cartSidebar.classList.add('scrolled-up');
                 cartSidebar.classList.remove('scrolled-down');
+            } else {
+                // Scrolling up
+                navbar.classList.remove('scrolled-up');
+                navbar.classList.add('scrolled-down');
+                cartSidebar.classList.remove('scrolled-up');
+                cartSidebar.classList.add('scrolled-down');
             }
-            
-            lastScrollY = window.scrollY;
-        });
+        } else {
+            // At top of page
+            navbar.classList.remove('scrolled-up', 'scrolled-down');
+            cartSidebar.classList.remove('scrolled-up', 'scrolled-down');
+        }
 
-        // Mobile Navigation Toggle
-        const navToggle = document.querySelector('.nav-toggle');
-        const navLinks = document.querySelector('.nav-links');
+        lastScrollY = window.scrollY;
+    });
 
+
+    /* ------------------------------
+       Mobile Navigation Toggle
+    ------------------------------ */
+    const navToggle = document.querySelector('.nav-toggle');
+    const navLinks = document.querySelector('.nav-links');
+
+    if (navToggle && navLinks) {
         navToggle.addEventListener('click', () => {
             navLinks.classList.toggle('active');
         });
 
-        // Close mobile menu when clicking on a link
         document.querySelectorAll('.nav-links a').forEach(link => {
             link.addEventListener('click', () => {
                 navLinks.classList.remove('active');
             });
         });
-
-       // Cart Functionality
-const cartIcon = document.getElementById('cartIcon');
-const closeCart = document.getElementById('closeCart');
-const overlay = document.getElementById('overlay');
-const cartItems = document.getElementById('cartItems');
-const cartTotal = document.getElementById('cartTotal');
-const cartCount = document.querySelector('.cart-count');
-const toast = document.getElementById('toast');
-const toastMessage = document.getElementById('toastMessage');
-const checkoutBtn = document.getElementById('checkoutBtn');
-
-let cart = [];
-
-// Open cart sidebar
-cartIcon.addEventListener('click', () => {
-    cartSidebar.classList.add('active');
-    overlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
-});
-
-// Close cart sidebar
-closeCart.addEventListener('click', () => {
-    cartSidebar.classList.remove('active');
-    overlay.classList.remove('active');
-    document.body.style.overflow = 'auto';
-});
-
-// Close cart when clicking on overlay
-overlay.addEventListener('click', () => {
-    cartSidebar.classList.remove('active');
-    overlay.classList.remove('active');
-    document.body.style.overflow = 'auto';
-});
-
-// Add to cart functionality
-document.querySelectorAll('.add-to-cart').forEach(button => {
-    button.addEventListener('click', function() {
-        const id = this.getAttribute('data-id');
-        const name = this.getAttribute('data-name');
-        const price = parseFloat(this.getAttribute('data-price'));
-        const image = this.getAttribute('data-image');
-        
-        addToCart(id, name, price, image);
-        showToast(`${name} added to cart!`);
-    });
-});
-
-// Add item to cart
-function addToCart(id, name, price, image) {
-    const existingItem = cart.find(item => item.id === id);
-    
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({
-            id,
-            name,
-            price,
-            image,
-            quantity: 1
-        });
     }
-    
-    updateCartUI();
-}
 
-// Remove item from cart
-function removeFromCart(id) {
-    cart = cart.filter(item => item.id !== id);
-    updateCartUI();
-}
 
-// Update quantity
-function updateQuantity(id, change) {
-    const item = cart.find(item => item.id === id);
-    
-    if (item) {
-        item.quantity += change;
-        
-        if (item.quantity < 1) {
-            removeFromCart(id);
-        } else {
-            updateCartUI();
-        }
-    }
-}
+    /* ------------------------------
+       Cart Functionality
+    ------------------------------ */
+    const cartIcon = document.getElementById('cartIcon');
+    const closeCart = document.getElementById('closeCart');
+    const overlay = document.getElementById('overlay');
+    const cartItems = document.getElementById('cartItems');
+    const cartTotal = document.getElementById('cartTotal');
+    const cartCount = document.querySelector('.cart-count');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+    const checkoutBtn = document.getElementById('checkoutBtn');
 
-// Update cart UI
-function updateCartUI() {
-    // Update cart items
-    if (cart.length === 0) {
-        cartItems.innerHTML = `
-            <div class="empty-cart">
-                <i class="fas fa-shopping-bag"></i>
-                <p>Your cart is empty</p>
-            </div>
-        `;
-    } else {
-        cartItems.innerHTML = '';
-        
-        cart.forEach(item => {
-            const cartItemElement = document.createElement("div");
-            cartItemElement.className = "cart-item";
-            cartItemElement.innerHTML = `
-                <div class="cart-item-image">
-                    <img src="${item.image}" alt="${item.name}">
-                </div>
-                <div class="cart-item-details">
-                    <div class="cart-item-title">${item.name}</div>
-                    <div class="cart-item-price">KSh ${item.price}</div>
-                    <div class="cart-item-actions">
-                        <div class="quantity-control">
-                            <button class="quantity-btn" data-id="${item.id}" data-change="-1">-</button>
-                            <span class="quantity">${item.quantity}</span>
-                            <button class="quantity-btn" data-id="${item.id}" data-change="1">+</button>
-                        </div>
-                        <button class="remove-item" data-id="${item.id}">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-            cartItems.appendChild(cartItemElement);
-        });
-        
-        // Add event listeners to quantity buttons
-        document.querySelectorAll('.quantity-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const id = this.getAttribute('data-id');
-                const change = parseInt(this.getAttribute('data-change'));
-                updateQuantity(id, change);
-            });
-        });
-        
-        // Add event listeners to remove buttons
-        document.querySelectorAll('.remove-item').forEach(button => {
-            button.addEventListener('click', function() {
-                const id = this.getAttribute('data-id');
-                removeFromCart(id);
-            });
-        });
-    }
-    
-    // Update cart total
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    cartTotal.textContent = `KSh ${total.toLocaleString()}`;
-    
-    // Update cart count
-    const itemCount = cart.reduce((count, item) => count + item.quantity, 0);
-    cartCount.textContent = itemCount;
-}
+    let cart = [];
 
-// Show toast notification
-function showToast(message) {
-    toastMessage.textContent = message;
-    toast.classList.add('active');
-    
-    setTimeout(() => {
-        toast.classList.remove('active');
-    }, 3000);
-}
-
-// Checkout functionality
-checkoutBtn.addEventListener('click', () => {
-    if (cart.length === 0) {
-        showToast('Your cart is empty!');
-        return;
-    }
-    
-    // Build order message for WhatsApp
-    let message = `Hello Shawarma Palace! I'd like to place an order:%0A%0A`;
-    
-    cart.forEach(item => {
-        message += `${item.name} x ${item.quantity} - KSh ${item.price * item.quantity}%0A`;
-    });
-    
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    message += `%0ATotal: KSh ${total}%0A%0A`;
-    message += `My delivery address is: [Please provide your address]%0A`;
-    message += `My contact number is: [Please provide your phone number]`;
-    
-    // Open WhatsApp with pre-filled message
-    const phoneNumber = "254795870136"; // Replace with your WhatsApp business number
-    const url = `https://wa.me/${phoneNumber}?text=${message}`;
-    window.open(url, '_blank');
-});
-
-        // Open cart sidebar
+    // Open cart sidebar
+    if (cartIcon && cartSidebar && overlay) {
         cartIcon.addEventListener('click', () => {
             cartSidebar.classList.add('active');
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
         });
+    }
 
-        // Close cart sidebar
-        closeCart.addEventListener('click', () => {
-            cartSidebar.classList.remove('active');
-            overlay.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        });
+    // Close cart sidebar
+    if (closeCart && overlay) {
+        closeCart.addEventListener('click', closeCartSidebar);
+        overlay.addEventListener('click', closeCartSidebar);
+    }
 
-        // Close cart when clicking on overlay
-        overlay.addEventListener('click', () => {
-            cartSidebar.classList.remove('active');
-            overlay.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        });
+    function closeCartSidebar() {
+        cartSidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
 
-        // Add to cart functionality
-        document.querySelectorAll('.add-to-cart').forEach(button => {
-            button.addEventListener('click', function() {
-                const id = this.getAttribute('data-id');
-                const name = this.getAttribute('data-name');
-                const price = parseFloat(this.getAttribute('data-price'));
-                const image = this.getAttribute('data-image');
-                
-                addToCart(id, name, price, image);
-                showToast(`${name} added to cart!`);
-            });
-        });
-
-        // Add item to cart
-        function addToCart(id, name, price, image) {
-            const existingItem = cart.find(item => item.id === id);
+    // Add to cart buttons
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const name = this.getAttribute('data-name');
+            const price = parseFloat(this.getAttribute('data-price'));
+            const image = this.getAttribute('data-image');
             
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({
-                    id,
-                    name,
-                    price,
-                    image,
-                    quantity: 1
-                });
-            }
-            
+            addToCart(id, name, price, image);
+            showToast(`${name} added to cart!`);
+        });
+    });
+
+    // Add item to cart
+    function addToCart(id, name, price, image) {
+        const existingItem = cart.find(item => item.id === id);
+
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            cart.push({ id, name, price, image, quantity: 1 });
+        }
+
+        updateCartUI();
+    }
+
+    // Remove item
+    function removeFromCart(id) {
+        cart = cart.filter(item => item.id !== id);
+        updateCartUI();
+    }
+
+    // Update quantity
+    function updateQuantity(id, change) {
+        const item = cart.find(item => item.id === id);
+        if (item) {
+            item.quantity += change;
+            if (item.quantity < 1) removeFromCart(id);
             updateCartUI();
         }
+    }
 
-        // Remove item from cart
-        function removeFromCart(id) {
-            cart = cart.filter(item => item.id !== id);
-            updateCartUI();
-        }
+    // Update Cart UI
+    function updateCartUI() {
+        if (!cartItems || !cartTotal || !cartCount) return;
 
-        // Update quantity
-        function updateQuantity(id, change) {
-            const item = cart.find(item => item.id === id);
-            
-            if (item) {
-                item.quantity += change;
-                
-                if (item.quantity < 1) {
-                    removeFromCart(id);
-                } else {
-                    updateCartUI();
-                }
-            }
-        }
+        if (cart.length === 0) {
+            cartItems.innerHTML = `
+                <div class="empty-cart">
+                    <i class="fas fa-shopping-bag"></i>
+                    <p>Your cart is empty</p>
+                </div>
+            `;
+        } else {
+            cartItems.innerHTML = '';
 
-        // Update cart UI
-        function updateCartUI() {
-            // Update cart items
-            if (cart.length === 0) {
-                cartItems.innerHTML = `
-                    <div class="empty-cart">
-                        <i class="fas fa-shopping-bag"></i>
-                        <p>Your cart is empty</p>
+            cart.forEach(item => {
+                const cartItemElement = document.createElement("div");
+                cartItemElement.className = "cart-item";
+                cartItemElement.innerHTML = `
+                    <div class="cart-item-image">
+                        <img src="${item.image}" alt="${item.name}">
+                    </div>
+                    <div class="cart-item-details">
+                        <div class="cart-item-title">${item.name}</div>
+                        <div class="cart-item-price">KSh ${item.price}</div>
+                        <div class="cart-item-actions">
+                            <div class="quantity-control">
+                                <button class="quantity-btn" data-id="${item.id}" data-change="-1">-</button>
+                                <span class="quantity">${item.quantity}</span>
+                                <button class="quantity-btn" data-id="${item.id}" data-change="1">+</button>
+                            </div>
+                            <button class="remove-item" data-id="${item.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
                 `;
-            } else {
-                cartItems.innerHTML = '';
-                
-                cart.forEach(item => {
-                    const cartItemElement = document.createElement("div");
-                    cartItemElement.className = "cart-item";
-                    cartItemElement.innerHTML = `
-                        <div class="cart-item-image">
-                            <img src="${item.image}" alt="${item.name}">
-                        </div>
-                        <div class="cart-item-details">
-                            <div class="cart-item-title">${item.name}</div>
-                            <div class="cart-item-price">KSh ${item.price}</div>
-                            <div class="cart-item-actions">
-                                <div class="quantity-control">
-                                    <button class="quantity-btn" data-id="${item.id}" data-change="-1">-</button>
-                                    <span class="quantity">${item.quantity}</span>
-                                    <button class="quantity-btn" data-id="${item.id}" data-change="1">+</button>
-                                </div>
-                                <button class="remove-item" data-id="${item.id}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    cartItems.appendChild(cartItemElement);
+                cartItems.appendChild(cartItemElement);
+            });
+
+            // Event listeners for new buttons
+            document.querySelectorAll('.quantity-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const change = parseInt(this.getAttribute('data-change'));
+                    updateQuantity(id, change);
                 });
-                
-                // Add event listeners to quantity buttons
-                document.querySelectorAll('.quantity-btn').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const id = this.getAttribute('data-id');
-                        const change = parseInt(this.getAttribute('data-change'));
-                        updateQuantity(id, change);
-                    });
+            });
+
+            document.querySelectorAll('.remove-item').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    removeFromCart(id);
                 });
-                
-                // Add event listeners to remove buttons
-                document.querySelectorAll('.remove-item').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const id = this.getAttribute('data-id');
-                        removeFromCart(id);
-                    });
-                });
-            }
-            
-            // Update cart total
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            cartTotal.textContent = `KSh ${total.toLocaleString()}`;
-            
-            // Update cart count
-            const itemCount = cart.reduce((count, item) => count + item.quantity, 0);
-            cartCount.textContent = itemCount;
+            });
         }
 
-        // Show toast notification
-        function showToast(message) {
-            toastMessage.textContent = message;
-            toast.classList.add('active');
-            
-            setTimeout(() => {
-                toast.classList.remove('active');
-            }, 3000);
-        }
+        // Update totals
+        const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        cartTotal.textContent = `KSh ${total.toLocaleString()}`;
 
-        // Checkout functionality
+        const itemCount = cart.reduce((count, item) => count + item.quantity, 0);
+        cartCount.textContent = itemCount;
+    }
+
+    // Toast notifications
+    function showToast(message) {
+        if (!toast || !toastMessage) return;
+
+        toastMessage.textContent = message;
+        toast.classList.add('active');
+
+        setTimeout(() => {
+            toast.classList.remove('active');
+        }, 3000);
+    }
+
+    // Checkout → WhatsApp
+    if (checkoutBtn) {
         checkoutBtn.addEventListener('click', () => {
             if (cart.length === 0) {
                 showToast('Your cart is empty!');
                 return;
             }
-            
-            // Build order message for WhatsApp
+
             let message = `Hello Shawarma Palace! I'd like to place an order:%0A%0A`;
-            
+
             cart.forEach(item => {
                 message += `${item.name} x ${item.quantity} - KSh ${item.price * item.quantity}%0A`;
             });
-            
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
             message += `%0ATotal: KSh ${total}%0A%0A`;
             message += `My delivery address is: [Please provide your address]%0A`;
             message += `My contact number is: [Please provide your phone number]`;
-            
-            // Open WhatsApp with pre-filled message
-            const phoneNumber = "254795870136"; // Replace with your WhatsApp business number
+
+            const phoneNumber = "254795870136";
             const url = `https://wa.me/${phoneNumber}?text=${message}`;
             window.open(url, '_blank');
         });
+    }
 
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                const targetId = this.getAttribute('href');
-                if (targetId === '#') return;
-                
-                const targetElement = document.querySelector(targetId);
-                if (targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
+    /* ------------------------------
+       Smooth Scroll for Links
+    ------------------------------ */
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
 
-        // Initialize cart UI
-        updateCartUI();
-        
-        // Prevent cart sidebar from appearing on browser resize
-        window.addEventListener('resize', () => {
-            // Ensure cart sidebar stays hidden on resize unless explicitly opened
-            if (!cartSidebar.classList.contains('active')) {
-                cartSidebar.style.right = '-100%';
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
             }
         });
-    </script>
+    });
+
+    /* ------------------------------
+       Initialize
+    ------------------------------ */
+    updateCartUI();
+
+});
+</script>
+
 </body>
 </html>
